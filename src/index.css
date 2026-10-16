@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  html.dark body {
+    background-color: #0c0d12;
+    color: #f4f4f5;
+  }
+
+  html.light body {
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+}
+
+/* Light mode overrides for high-contrast, clean day styling */
+html.light .bg-\[\#0c0d12\],
+html.light .bg-\[\#0d0f17\],
+html.light .bg-\[\#0f1118\],
+html.light .bg-\[\#0f111a\],
+html.light .bg-\[\#0f121d\],
+html.light .bg-\[\#10121a\],
+html.light .bg-\[\#101320\],
+html.light .bg-\[\#0d1017\],
+html.light .bg-\[\#111422\],
+html.light .bg-\[\#141828\]\/80 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-\[\#11131c\],
+html.light .bg-\[\#121520\],
+html.light .bg-\[\#0e1017\],
+html.light .bg-\[\#0e111a\],
+html.light .bg-\[\#12141c\],
+html.light .bg-\[\#13151f\],
+html.light .bg-\[\#141620\],
+html.light .bg-\[\#141622\],
+html.light .bg-\[\#141827\]\/90 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-\[\#0b0d14\],
+html.light .bg-\[\#0a0d15\] {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .border-slate-800,
+html.light .border-slate-700,
+html.light .border-slate-700\/60,
+html.light .border-slate-700\/50,
+html.light .border-slate-700\/80,
+html.light .border-zinc-800,
+html.light .border-zinc-800\/90,
+html.light .border-zinc-700,
+html.light .border-zinc-700\/80,
+html.light .border-zinc-700\/60 {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-slate-900,
+html.light .bg-slate-950,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/40,
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/80,
+html.light .bg-zinc-900,
+html.light .bg-zinc-950 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light .text-slate-100,
+html.light .text-zinc-100 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-200,
+html.light .text-zinc-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300,
+html.light .text-zinc-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400,
+html.light .text-zinc-400 {
+  color: #64748b !important;
+}
+
+html.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+html.light textarea,
+html.light select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 9999px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "OC 独立全设定集",
+  "description": "专为创作者打造的OC角色独立设定集与多维可视化数据库",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

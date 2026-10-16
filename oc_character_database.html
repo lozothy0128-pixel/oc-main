@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>OC 独立全设定集</title>
+  
+  <!-- 核心CDN与离线备用加载 (支持Vue3与Tailwind) -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    if (typeof Vue === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"><\/script>');
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    html.dark body {
+      background-color: #0b0d14;
+      color: #f1f5f9;
+    }
+    html.light body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    /* Day mode overrides for containers and borders */
+    html.light .bg-\[\#0b0d14\],
+    html.light .bg-\[\#0c0e14\],
+    html.light .bg-\[\#0e111c\]\/95,
+    html.light .bg-\[\#0f1118\],
+    html.light .bg-\[\#0f121d\],
+    html.light .bg-\[\#111422\],
+    html.light .bg-\[\#12141c\],
+    html.light .bg-\[\#141824\],
+    html.light .bg-\[\#141828\] {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+    html.light .bg-\[\#13151f\],
+    html.light .bg-\[\#141827\]\/90,
+    html.light .bg-\[\#0e111a\],
+    html.light .bg-slate-900,
+    html.light .bg-slate-950,
+    html.light .bg-zinc-900,
+    html.light .bg-zinc-950 {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+    html.light .border-slate-800,
+    html.light .border-slate-800\/80,
+    html.light .border-slate-700,
+    html.light .border-zinc-800,
+    html.light .border-zinc-700\/80 {
+      border-color: #e2e8f0 !important;
+    }
+    html.light .text-slate-100,
+    html.light .text-zinc-100,
+    html.light .text-white {
+      color: #0f172a !important;
+    }
+    html.light .text-slate-400,
+    html.light .text-zinc-400 {
+      color: #64748b !important;
+    }
+    html.light .text-slate-300,
+    html.light .text-zinc-300 {
+      color: #334155 !important;
+    }
+    html.light input:not([type="color"]):not([type="range"]),
+    html.light textarea,
+    html.light select {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+      background: #252b40;
+      border-radius: 9999px;
+    }
+    html.light ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden antialiased">
+  <div id="app" class="min-h-screen flex flex-col flex-1 w-full max-w-full overflow-x-hidden transition-colors" :class="isDark ? 'bg-[#0b0d14] text-slate-100' : 'bg-[#f8fafc] text-slate-900'">
+
+    <!-- 顶部导航栏 (手机端按钮单行锁定 flex-nowrap) -->
+    <header class="sticky top-0 z-40 bg-[#0e111c]/95 backdrop-blur-md border-b border-slate-800/80 px-3.5 sm:px-6 py-2.5 sm:py-3.5">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+        <!-- Logo与角色计数 -->
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 whitespace-nowrap">
+            {{ characters.length }} 个OC
+          </span>
+        </div>
+
+        <!-- 顶部操作栏 (手机端单行自适应) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <!-- 日夜间切换按钮 -->
+          <button @click="toggleTheme" :title="isDark ? '切换至日间模式 (浅色)' : '切换至夜间模式 (深色)'" class="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center shrink-0 shadow-xs" :class="isDark ? 'bg-zinc-900 hover:bg-zinc-800 text-amber-300 border-zinc-700/80' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 border-zinc-300'">
+            <svg v-if="isDark" class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <svg v-else class="w-3.5 h-3.5 text-zinc-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          </button>
+
+          <button @click="openExportModal" title="备份全部角色数据为 JSON 文件" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-medium flex items-center justify-center gap-1 border border-zinc-700/80 transition cursor-pointer shrink-0">
+            <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>备份</span>
+          </button>
+
+          <button @click="openImportModal" title="导入已有 OC 备份文件" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-medium flex items-center justify-center gap-1 border border-zinc-700/80 transition cursor-pointer shrink-0">
+            <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+            <span>导入</span>
+          </button>
+
+          <button @click="openCreateModal" class="px-3 sm:px-3.5 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-xs flex items-center justify-center gap-1 transition cursor-pointer shrink-0 shadow-sm">
+            <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>新建</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主工作区 -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-2.5 sm:px-6 py-3.5 sm:py-6 space-y-4">
+      
+      <!-- 搜索、筛选与视图工具条 -->
+      <div class="space-y-3">
+        <!-- 搜索与排序工具条 (单行适配手机与桌面) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 w-full">
+          <!-- 搜索框 (flex-1) -->
+          <div class="relative flex-1 min-w-0">
+            <svg class="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input 
+              v-model="searchQuery" 
+              type="text" 
+              placeholder="搜索角色名、种族、标签..." 
+              class="w-full pl-8 sm:pl-8.5 pr-6 sm:pr-7 py-1.5 sm:py-2 rounded-xl bg-[#12141c] border border-zinc-800 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 outline-none focus:border-zinc-500 transition shadow-inner"
+            >
+            <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs cursor-pointer">✕</button>
+          </div>
+
+          <!-- 排序 (最新更新) -->
+          <div class="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 sm:py-2 bg-[#12141c] border border-zinc-800 rounded-xl text-xs text-zinc-300 shrink-0">
+            <select v-model="sortBy" class="bg-transparent text-zinc-300 outline-none cursor-pointer pr-0 text-[11px] sm:text-xs">
+              <option value="updatedAt" class="bg-[#12141c] text-zinc-200">最新更新</option>
+              <option value="createdAt" class="bg-[#12141c] text-zinc-200">创建时间</option>
+              <option value="name" class="bg-[#12141c] text-zinc-200">角色名称</option>
+            </select>
+          </div>
+
+          <!-- 排列方式 (网格/列表) -->
+          <div class="flex items-center bg-[#12141c] p-0.5 rounded-xl border border-zinc-800 shrink-0">
+            <button 
+              @click="viewMode = 'grid'" 
+              :class="viewMode === 'grid' ? 'bg-white text-black font-semibold shadow-sm' : 'text-zinc-400 hover:text-zinc-200'"
+              class="p-1 sm:p-1.5 rounded-lg text-xs transition cursor-pointer"
+              title="网格视图"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            </button>
+            <button 
+              @click="viewMode = 'compact'" 
+              :class="viewMode === 'compact' ? 'bg-white text-black font-semibold shadow-sm' : 'text-zinc-400 hover:text-zinc-200'"
+              class="p-1 sm:p-1.5 rounded-lg text-xs transition cursor-pointer"
+              title="列表视图"
+            >
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 标签横向栏 -->
+        <div v-if="availableTags.length > 0" class="flex items-center gap-1.5 overflow-x-auto py-1 text-xs no-scrollbar">
+          <button 
+            @click="selectedTag = ''" 
+            :class="selectedTag === '' ? 'bg-purple-600 text-white shadow-md' : 'bg-[#141824] text-slate-400 border border-slate-800 hover:border-slate-700'"
+            class="px-3 py-1 rounded-lg transition cursor-pointer font-medium whitespace-nowrap"
+          >
+            全部角色
+          </button>
+          <button 
+            v-for="tag in availableTags" 
+            :key="tag" 
+            @click="selectedTag = (selectedTag === tag ? '' : tag)"
+            :class="selectedTag === tag ? 'bg-purple-600 text-white shadow-md' : 'bg-[#141824] text-slate-300 border border-slate-800 hover:border-purple-500/40'"
+            class="px-3 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 whitespace-nowrap"
+          >
+            <span>#{{ tag }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 角色卡片列表 (标准 3:4 比例，撞色拼接，无标签，右下角三操作) -->
+      <div v-if="viewMode === 'grid' && filteredCharacters.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-4 md:gap-5">
+        <div 
+          v-for="char in filteredCharacters" 
+          :key="char.id" 
+          @click="openDetailModal(char)"
+          class="group relative aspect-[3/4] w-full bg-[#0d0f17] border border-zinc-800 hover:border-zinc-500 rounded-xl overflow-hidden transition-all duration-200 cursor-pointer flex flex-col select-none shadow-sm"
+        >
+          <!-- 上半部分：3:4 比例头像插画 (自适应剩余高度) - 无按钮遮挡纯净呈现 -->
+          <div class="relative flex-1 min-h-0 w-full bg-zinc-950 overflow-hidden flex items-center justify-center">
+            <img 
+              v-if="char.avatar || char.standingIllustration"
+              :src="char.avatar || char.standingIllustration" 
+              :alt="char.name" 
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103 select-none"
+            >
+            <div 
+              v-else 
+              class="w-full h-full flex flex-col items-center justify-center p-2 bg-zinc-900 text-zinc-500"
+            >
+              <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-zinc-700 bg-zinc-800 flex items-center justify-center text-xs sm:text-sm font-bold text-zinc-300 mb-1">
+                {{ char.name ? char.name.charAt(0) : '?' }}
+              </div>
+              <span class="text-[9px] sm:text-[10px] text-zinc-500">无头像</span>
+            </div>
+          </div>
+
+          <!-- 下半部分：撞色信息色块 (shrink-0 确保信息与按钮不被挤压遮挡) -->
+          <div class="shrink-0 w-full bg-[#13151f] border-t border-zinc-800/90 p-2 sm:p-2.5 flex flex-col justify-between">
+            <!-- 名字与别称 (标签已全去) -->
+            <div class="min-w-0 pr-0.5">
+              <h3 class="text-xs sm:text-sm font-semibold text-white group-hover:text-zinc-200 transition truncate leading-tight">
+                {{ char.name || '未命名角色' }}
+              </h3>
+              <p v-if="char.nickname" class="text-[10px] sm:text-xs text-zinc-400 truncate mt-0.5 leading-tight">
+                {{ char.nickname }}
+              </p>
+              <p v-else class="text-[10px] sm:text-xs text-zinc-600 truncate mt-0.5 leading-tight">
+                无别称
+              </p>
+            </div>
+
+            <!-- 右下角操作按钮：编辑、导出、删除 -->
+            <div 
+              class="flex items-center justify-end gap-1 pt-1.5 shrink-0 self-end" 
+              @click.stop
+            >
+              <button 
+                @click="openEditModal(char)" 
+                title="编辑角色" 
+                class="p-1 sm:p-1.5 rounded-md bg-zinc-900/95 hover:bg-zinc-800 active:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700/80 transition cursor-pointer shrink-0"
+              >
+                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button 
+                @click="exportSingleCharacter(char)" 
+                title="导出独立角色卡" 
+                class="p-1 sm:p-1.5 rounded-md bg-zinc-900/95 hover:bg-zinc-800 active:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700/80 transition cursor-pointer shrink-0"
+              >
+                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              </button>
+              <button 
+                @click="promptDelete(char.id, char.name)" 
+                title="删除角色" 
+                class="p-1 sm:p-1.5 rounded-md bg-zinc-900/95 hover:bg-rose-950/70 active:bg-rose-900 text-zinc-300 hover:text-rose-400 border border-zinc-700/80 transition cursor-pointer shrink-0"
+              >
+                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 紧凑列表模式 -->
+      <div v-else-if="viewMode === 'compact' && filteredCharacters.length > 0" class="space-y-2.5">
+        <div 
+          v-for="char in filteredCharacters" 
+          :key="char.id" 
+          @click="openDetailModal(char)"
+          class="group bg-[#131624] hover:bg-[#181d2f] border border-slate-800 hover:border-purple-500/50 rounded-2xl p-3 transition flex items-center justify-between gap-4 cursor-pointer shadow-md"
+        >
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-12 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-700/70 bg-slate-950 relative flex items-center justify-center">
+              <img v-if="char.avatar || char.standingIllustration" :src="char.avatar || char.standingIllustration" class="w-full h-full object-cover" alt="">
+              <div v-else class="w-full h-full flex items-center justify-center font-bold text-white text-base" :style="{ backgroundColor: char.representativeColor || '#8b5cf6' }">
+                {{ char.name ? char.name.charAt(0) : '?' }}
+              </div>
+            </div>
+            <div class="min-w-0 space-y-1">
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-sm sm:text-base text-white group-hover:text-purple-300 transition truncate">{{ char.name }}</h3>
+                <span v-if="char.nickname" class="text-xs text-purple-300 hidden sm:inline">[{{ char.nickname }}]</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-slate-400">
+                <span v-if="char.race" class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700/60 text-slate-300">{{ char.race }}</span>
+                <span v-if="char.occupation">{{ char.occupation }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 shrink-0" @click.stop>
+            <button @click="openEditModal(char)" title="编辑" class="p-2 text-slate-400 hover:text-purple-300 hover:bg-slate-800 rounded-lg transition cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </button>
+            <button @click="promptDelete(char.id, char.name)" title="删除" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/50 rounded-lg transition cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 空状态 -->
+      <div v-else-if="filteredCharacters.length === 0" class="py-16 px-4 rounded-3xl border border-dashed border-slate-800 bg-[#101320]/60 flex flex-col items-center justify-center text-center space-y-3">
+        <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        </div>
+        <h3 class="text-sm font-bold text-slate-200">未找到匹配的角色卡</h3>
+        <p class="text-xs text-slate-400 max-w-xs">尝试切换分类标签或点击新建角色卡开启创作</p>
+        <button @click="openCreateModal" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs shadow-md cursor-pointer transition">
+          新建 OC 角色卡
+        </button>
+      </div>
+    </main>
+
+    <!-- 底部状态 -->
+    <footer class="border-t border-zinc-800 bg-[#0a0d15] py-3 px-4 text-center text-xs text-zinc-500 shrink-0">
+      <div class="max-w-7xl mx-auto flex items-center justify-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
+        <span>数据存储在本地浏览器，请及时备份</span>
+      </div>
+    </footer>
+
+    <!-- 全屏大图浏览灯箱组件 (带前后切换与缩放) -->
+    <div v-if="viewerImages.length > 0 && isViewerOpen" @click="closeViewer" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-3 sm:p-6 select-none animate-fade-in">
+      <div class="flex items-center justify-between z-10 w-full max-w-6xl mx-auto" @click.stop>
+        <div class="flex items-center gap-3 text-slate-200 text-xs">
+          <span class="font-mono bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700 font-bold">
+            {{ viewerIndex + 1 }} / {{ viewerImages.length }}
+          </span>
+          <span class="text-slate-300 font-medium truncate max-w-xs sm:max-w-md">
+            {{ viewerImages[viewerIndex]?.caption || viewerImages[viewerIndex]?.title || '大图浏览' }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a :href="viewerImages[viewerIndex]?.url" :download="(viewerImages[viewerIndex]?.caption || 'oc_image') + '.jpg'" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 transition">
+            下载原图
+          </a>
+          <button @click="closeViewer" class="p-1.5 text-slate-400 hover:text-white rounded-lg transition text-base">✕</button>
+        </div>
+      </div>
+
+      <div class="relative flex-1 flex items-center justify-center overflow-hidden my-2">
+        <button v-if="viewerImages.length > 1" @click.stop="prevViewerImage" class="absolute left-2 sm:left-4 z-20 p-3 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700 shadow-xl cursor-pointer">
+          ‹
+        </button>
+
+        <div class="max-w-full max-h-[82vh] flex items-center justify-center" @click.stop>
+          <img :src="viewerImages[viewerIndex]?.url" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl ring-1 ring-white/10" alt="">
+        </div>
+
+        <button v-if="viewerImages.length > 1" @click.stop="nextViewerImage" class="absolute right-2 sm:right-4 z-20 p-3 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700 shadow-xl cursor-pointer">
+          ›
+        </button>
+      </div>
+
+      <div v-if="viewerImages.length > 1" class="flex items-center justify-center gap-2 overflow-x-auto py-1 z-10 max-w-2xl mx-auto" @click.stop>
+        <button 
+          v-for="(img, idx) in viewerImages" 
+          :key="idx" 
+          @click="viewerIndex = idx"
+          :class="viewerIndex === idx ? 'border-purple-500 scale-105' : 'border-slate-800 opacity-60 hover:opacity-100'"
+          class="w-12 h-12 rounded-lg overflow-hidden border-2 transition cursor-pointer shrink-0"
+        >
+          <img :src="img.url" class="w-full h-full object-cover" alt="">
+        </button>
+      </div>
+    </div>
+
+    <!-- 查看角色详情全案弹窗 (7个简洁栏目: 概览、档案、九维、背景、世界观、关系、图库) -->
+    <div v-if="isDetailModalOpen && activeChar" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-fade-in">
+      <div class="relative w-full max-w-5xl bg-[#0f121d] border border-slate-800 rounded-3xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden text-slate-100">
+        
+        <!-- 详情弹窗头部 -->
+        <div class="p-5 sm:p-6 border-b border-slate-800 flex items-start justify-between relative bg-slate-900/40 shrink-0">
+          <div class="flex items-center gap-4">
+            <!-- 头像框 (点击放大) -->
+            <div 
+              @click="openViewerFromChar(activeChar, activeChar.avatar || activeChar.standingIllustration)"
+              class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-slate-700 bg-slate-950 relative flex items-center justify-center cursor-pointer shadow-lg group" 
+              title="点击查看高清大图"
+            >
+              <template v-if="activeChar.avatar || activeChar.standingIllustration">
+                <img :src="activeChar.avatar || activeChar.standingIllustration" class="absolute inset-0 w-full h-full object-cover blur-sm opacity-35" alt="">
+                <img :src="activeChar.avatar || activeChar.standingIllustration" class="relative z-1 max-w-full max-h-full object-contain" alt="">
+              </template>
+              <div v-else class="w-full h-full flex items-center justify-center text-2xl font-bold text-white/90" :style="{ backgroundColor: activeChar.representativeColor || '#8b5cf6' }">
+                {{ activeChar.name ? activeChar.name.charAt(0) : '?' }}
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg sm:text-2xl font-black text-white">{{ activeChar.name }}</h2>
+                <span v-if="activeChar.nickname" class="text-xs sm:text-sm text-purple-300">[{{ activeChar.nickname }}]</span>
+              </div>
+              <div class="flex items-center gap-2 mt-1 text-xs text-slate-400 flex-wrap">
+                <span v-if="activeChar.gender" class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700/60 text-slate-300">{{ activeChar.gender }}</span>
+                <span v-if="activeChar.race" class="text-purple-300 font-medium">{{ activeChar.race }}</span>
+                <span v-if="activeChar.occupation">· {{ activeChar.occupation }}</span>
+                <span v-if="activeChar.age">· {{ activeChar.age }}</span>
+              </div>
+              <p v-if="activeChar.catchphrase" class="text-xs text-slate-300 italic mt-1 font-serif">“{{ activeChar.catchphrase.replace(/^“|”$/g, '') }}”</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button @click="copyAllText(activeChar)" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 hover:text-white transition cursor-pointer">复制文本</button>
+            <button @click="openEditModal(activeChar)" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-xs text-white font-bold transition cursor-pointer">编辑</button>
+            <button @click="isDetailModalOpen = false" class="p-1.5 text-slate-400 hover:text-white transition cursor-pointer">✕</button>
+          </div>
+        </div>
+
+        <!-- 详情栏目导航条 (7个极简栏目) -->
+        <div class="flex items-center gap-1 px-4 sm:px-6 py-2 border-b border-slate-800 bg-[#121624] overflow-x-auto no-scrollbar shrink-0">
+          <button 
+            v-for="tab in cleanTabs" 
+            :key="tab.id"
+            @click="activeDetailTab = tab.id"
+            :class="activeDetailTab === tab.id ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'"
+            class="px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer whitespace-nowrap"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <!-- 详情正文区域 -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 text-xs text-slate-300">
+          
+          <!-- 1. 概览 -->
+          <div v-if="activeDetailTab === 'overview'" class="space-y-4">
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-2">
+              <span class="font-bold text-purple-300 block text-xs">人物小传与设定简介</span>
+              <p class="leading-relaxed text-sm text-slate-200 whitespace-pre-line">{{ activeChar.bio || '暂无详细简介' }}</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">代表花</span><span class="text-pink-300 font-semibold text-sm">{{ activeChar.representativeFlower || '-' }}</span></div>
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">代表物</span><span class="text-amber-300 font-semibold text-sm">{{ activeChar.representativeItem || '-' }}</span></div>
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">体型</span><span class="text-slate-200 text-sm">{{ activeChar.bodyType || '-' }}</span></div>
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">颜值评价</span><span class="text-slate-200 text-sm">{{ activeChar.attractiveness || '-' }}</span></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="p-3.5 bg-[#141828] rounded-xl border border-slate-800 space-y-1">
+                <span class="font-bold text-purple-300 block">异能 / 特殊能力</span>
+                <p class="text-slate-200">{{ activeChar.superpower || '无' }}</p>
+              </div>
+              <div class="p-3.5 bg-[#141828] rounded-xl border border-slate-800 space-y-1">
+                <span class="font-bold text-indigo-300 block">武器风格</span>
+                <p class="text-slate-200">{{ activeChar.weaponStyle || '无' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 档案 -->
+          <div v-if="activeDetailTab === 'dossier'" class="space-y-4">
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-2">
+              <span class="font-bold text-purple-300 block text-xs">外貌体征详情</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300">
+                <div>身高：{{ activeChar.height || '-' }}</div>
+                <div>体重：{{ activeChar.weight || '-' }}</div>
+                <div>发色：{{ activeChar.hairColor || '-' }}</div>
+                <div>发长：{{ activeChar.hairLength || '-' }}</div>
+                <div>发型：{{ activeChar.hairStyle || '-' }}</div>
+                <div>脸型：{{ activeChar.faceShape || '-' }}</div>
+                <div>瞳色：{{ activeChar.eyeColor || '-' }}</div>
+                <div>眼型：{{ activeChar.eyeShape || '-' }}</div>
+                <div>耳饰：{{ activeChar.earAccessories || '-' }}</div>
+                <div>发饰：{{ activeChar.hairAccessories || '-' }}</div>
+                <div>其他特征：{{ activeChar.otherFeatures || '-' }}</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-2">
+              <span class="font-bold text-emerald-300 block text-xs">生活习惯与日常喜好</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+                <div>口味偏好：{{ activeChar.tastePreference || '-' }}</div>
+                <div>饮食习惯：{{ activeChar.dietaryHabits || '-' }}</div>
+                <div>过敏原：{{ activeChar.allergies || '-' }}</div>
+                <div>掌握语种：{{ activeChar.languages || '-' }}</div>
+                <div>喜欢的活动：{{ activeChar.favoriteActivities || '-' }}</div>
+                <div>兴趣爱好：{{ activeChar.hobbies || '-' }}</div>
+                <div>特别喜欢：{{ activeChar.likes || '-' }}</div>
+                <div>特别讨厌：{{ activeChar.dislikes || '-' }}</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-2">
+              <span class="font-bold text-sky-300 block text-xs">心理状态与性格特征</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+                <div>性格描述：{{ activeChar.personality || '-' }}</div>
+                <div>精神状态：{{ activeChar.mentalState || '-' }}</div>
+                <div>心理阴影：{{ activeChar.trauma || '-' }}</div>
+                <div>恐惧事物：{{ activeChar.fears || '-' }}</div>
+                <div>身体隐疾：{{ activeChar.illnesses || '-' }}</div>
+                <div>习惯举止：{{ activeChar.behaviorHabits || '-' }}</div>
+                <div>擅长领域：{{ activeChar.proficiencies || '-' }}</div>
+                <div>愿景追求：{{ activeChar.aspirations || '-' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 九维 -->
+          <div v-if="activeDetailTab === 'stats'" class="space-y-4">
+            <div class="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-xl bg-[#141828] border border-slate-800">
+              <div class="flex flex-col items-center justify-center shrink-0">
+                <svg width="220" height="220" viewBox="0 0 260 260">
+                  <polygon points="130,30 206,58 230,130 206,202 130,230 54,202 30,130 54,58" fill="none" stroke="#252b40" stroke-width="1"></polygon>
+                  <polygon points="130,63 181,82 197,130 181,178 130,197 79,178 63,130 79,82" fill="none" stroke="#252b40" stroke-width="1"></polygon>
+                  <polygon :points="getRadarPoints(activeChar.stats || {})" :fill="(activeChar.representativeColor || '#8b5cf6') + '33'" :stroke="activeChar.representativeColor || '#8b5cf6'" stroke-width="2"></polygon>
+                </svg>
+                <span class="text-[11px] text-slate-400 mt-1">九维能力雷达图</span>
+              </div>
+              <div class="flex-1 w-full grid grid-cols-2 gap-2 text-xs">
+                <div v-for="stat in statList" :key="stat.key" class="p-2 rounded bg-slate-900 border border-slate-800 flex justify-between">
+                  <span class="text-slate-400">{{ stat.label }}</span>
+                  <span class="font-bold text-purple-300">{{ activeChar.stats ? (activeChar.stats[stat.key] || 50) : 50 }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 背景 -->
+          <div v-if="activeDetailTab === 'lore'" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">出生地</span><span class="text-slate-200 text-sm">{{ activeChar.birthplace || '-' }}</span></div>
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">现居地</span><span class="text-slate-200 text-sm">{{ activeChar.residence || '-' }}</span></div>
+              <div class="p-3 bg-[#141828] rounded-xl border border-slate-800"><span class="text-slate-500 block">宗教信仰</span><span class="text-slate-200 text-sm">{{ activeChar.religion || '-' }}</span></div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-2">
+              <span class="font-bold text-purple-300 block text-xs">家族背景与传家宝</span>
+              <p><strong>家庭背景：</strong>{{ activeChar.familyBackground || '未填写' }}</p>
+              <p><strong>家族习俗：</strong>{{ activeChar.familyCustoms || '未填写' }}</p>
+              <p><strong>家族传家宝：</strong>{{ activeChar.familyHeirloom || '未填写' }}</p>
+            </div>
+          </div>
+
+          <!-- 5. 世界观 (单独分栏 + 按年代升序排列的时间轴) -->
+          <div v-if="activeDetailTab === 'worldview'" class="space-y-5">
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-2">
+              <span class="font-bold text-purple-300 block text-xs">世界观宏观设定</span>
+              <p class="leading-relaxed text-sm text-slate-200 whitespace-pre-line">{{ activeChar.worldview || '暂无世界观设定' }}</p>
+            </div>
+
+            <!-- 可视化时间轴 -->
+            <div class="p-4 rounded-xl bg-[#141828] border border-slate-800 space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-bold text-purple-300 text-xs">世界线编年史时间轴</span>
+                <span class="text-[11px] text-slate-500">按历史年代升序排序</span>
+              </div>
+
+              <div v-if="getSortedTimeline(activeChar.timelineEvents).length > 0" class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-purple-500 before:to-slate-800">
+                <div v-for="(evt, idx) in getSortedTimeline(activeChar.timelineEvents)" :key="idx" class="relative group">
+                  <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-purple-500 border-2 border-[#141828] shadow"></div>
+                  <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-950 text-purple-300 border border-purple-800/50">{{ evt.year }}</span>
+                      <span class="font-bold text-white text-xs">{{ evt.title }}</span>
+                    </div>
+                    <p v-if="evt.description" class="text-slate-400 text-[11px] leading-relaxed">{{ evt.description }}</p>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-xs text-slate-500 py-4 text-center">
+                {{ activeChar.timeline ? '世界线文本记录：' + activeChar.timeline : '暂无时间轴纪元条目，在编辑中添加带有年代的事件即可自动生成时间轴。' }}
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. 关系 (关系网与关联OC) -->
+          <div v-if="activeDetailTab === 'relations'" class="space-y-5">
+            <div class="p-4 rounded-xl bg-[#0f1118] border border-slate-800 space-y-4">
+              <span class="font-bold text-slate-300 block text-xs">人际关系网</span>
+
+              <!-- 关系网 SVG 可视化 (极简风：仅头像与线条) -->
+              <div class="relative w-full aspect-[5/3] max-h-[300px] bg-[#0c0e14] rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden">
+                <svg viewBox="0 0 500 300" class="w-full h-full">
+                  <defs>
+                    <clipPath id="html-center-clip">
+                      <circle cx="250" cy="140" r="24"></circle>
+                    </clipPath>
+                    <clipPath v-for="(node, idx) in computeRelationNodes(activeChar)" :key="'clip-'+idx" :id="'html-node-clip-'+idx">
+                      <circle :cx="node.x" :cy="node.y" r="20"></circle>
+                    </clipPath>
+                  </defs>
+
+                  <!-- 连线与外围节点 (简洁纯净：头像与线条) -->
+                  <g v-for="(node, idx) in computeRelationNodes(activeChar)" :key="idx">
+                    <!-- 极简线条 -->
+                    <line x1="250" y1="140" :x2="node.x" :y2="node.y" stroke="#475569" stroke-width="1.5"></line>
+                    <!-- 极简文字标签 -->
+                    <text :x="(250 + node.x) / 2" :y="(140 + node.y) / 2 - 4" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="500">{{ node.rel.relationType || '关联' }}</text>
+
+                    <!-- 外围节点 (头像与边框) -->
+                    <circle :cx="node.x" :cy="node.y" r="21" fill="#181d2f" stroke="#64748b" stroke-width="1.5" class="cursor-pointer" @click="openDetailModal(node.target)"></circle>
+                    <image v-if="node.target.avatar || node.target.standingIllustration" :href="node.target.avatar || node.target.standingIllustration" :x="node.x - 20" :y="node.y - 20" width="40" height="40" preserveAspectRatio="xMidYMid slice" :clip-path="'url(#html-node-clip-' + idx + ')'" class="cursor-pointer" @click="openDetailModal(node.target)"></image>
+                    <text v-else :x="node.x" :y="node.y + 4" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold" class="cursor-pointer" @click="openDetailModal(node.target)">
+                      {{ node.target.name ? node.target.name.slice(0, 3) : '?' }}
+                    </text>
+                    <!-- 角色名字 -->
+                    <text :x="node.x" :y="node.y + 32" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="500">
+                      {{ node.target.name }}
+                    </text>
+                  </g>
+
+                  <!-- 中心当前角色节点 (头像与边框) -->
+                  <circle cx="250" cy="140" r="25" fill="#141828" stroke="#94a3b8" stroke-width="2"></circle>
+                  <image v-if="activeChar.avatar || activeChar.standingIllustration" :href="activeChar.avatar || activeChar.standingIllustration" x="226" y="116" width="48" height="48" preserveAspectRatio="xMidYMid slice" clip-path="url(#html-center-clip)"></image>
+                  <text v-else x="250" y="145" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">{{ activeChar.name.slice(0, 3) }}</text>
+                  <text x="250" y="178" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">{{ activeChar.name }}</text>
+                </svg>
+              </div>
+
+              <!-- 关系列表卡片 -->
+              <div v-if="activeChar.relationships && activeChar.relationships.length" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                <div v-for="rel in activeChar.relationships" :key="rel.id" class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-start gap-3">
+                  <div class="min-w-0 flex-1 space-y-1">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-white text-xs">{{ getCharNameById(rel.targetCharacterId) }}</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-800">{{ rel.relationType }}</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px] leading-relaxed">{{ rel.description || '暂无说明' }}</p>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-xs text-slate-500 py-3 text-center">
+                暂未配置关联角色，点击右上角「编辑」在「关系」栏目中选择已有 OC 建立人物网络。
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. 图库 (点一下就能全屏浏览大图) -->
+          <div v-if="activeDetailTab === 'gallery'" class="space-y-4">
+            <!-- 立绘 -->
+            <div v-if="activeChar.standingIllustration" class="p-4 bg-[#141828] rounded-xl border border-slate-800 space-y-2">
+              <span class="font-bold text-purple-300 block text-xs">全身立绘 (点击浏览大图)</span>
+              <div 
+                @click="openViewerFromChar(activeChar, activeChar.standingIllustration)" 
+                class="relative max-w-sm mx-auto h-72 sm:h-80 rounded-2xl border border-slate-700/80 bg-slate-950 flex items-center justify-center p-2 cursor-zoom-in group shadow-xl overflow-hidden"
+              >
+                <img :src="activeChar.standingIllustration" class="absolute inset-0 w-full h-full object-cover blur-sm opacity-30" alt="">
+                <img :src="activeChar.standingIllustration" class="relative z-1 max-w-full max-h-full object-contain group-hover:scale-105 transition" alt="">
+              </div>
+            </div>
+
+            <!-- 相册插画 -->
+            <div v-if="activeChar.gallery && activeChar.gallery.length" class="p-4 bg-[#141828] rounded-xl border border-slate-800 space-y-3">
+              <span class="font-bold text-purple-300 block text-xs">角色相册图库 ({{ activeChar.gallery.length }} 张)</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div 
+                  v-for="(g, idx) in activeChar.gallery" 
+                  :key="idx" 
+                  @click="openViewerFromChar(activeChar, g.url)" 
+                  class="relative aspect-square rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 flex items-center justify-center p-1 cursor-zoom-in group shadow"
+                >
+                  <img :src="g.url" class="absolute inset-0 w-full h-full object-cover blur-sm opacity-30" alt="">
+                  <img :src="g.url" class="relative z-1 max-w-full max-h-full object-contain group-hover:scale-105 transition" alt="">
+                  <div v-if="g.caption" class="absolute bottom-0 inset-x-0 z-2 bg-black/80 px-1.5 py-0.5 text-[10px] text-slate-300 truncate text-center">
+                    {{ g.caption }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 弹窗底部操作栏 -->
+        <div class="p-4 border-t border-slate-800 flex justify-between items-center bg-slate-900/60 shrink-0">
+          <button @click="promptDelete(activeChar.id, activeChar.name)" class="text-rose-400 hover:text-rose-300 text-xs cursor-pointer flex items-center gap-1">
+            <span>删除此角色卡</span>
+          </button>
+          <button @click="isDetailModalOpen = false" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs cursor-pointer transition">
+            关闭
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑/新建角色卡弹窗 (7个简洁栏目) -->
+    <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-fade-in">
+      <div class="relative w-full max-w-4xl bg-[#111422] border border-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden text-slate-100">
+        
+        <!-- 弹窗顶部 -->
+        <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-[#141827]/90 shrink-0">
+          <h2 class="text-sm sm:text-base font-bold text-white">
+            {{ form.id ? '编辑角色设定档案' : '新建 OC 角色卡' }}
+          </h2>
+          <button @click="isEditModalOpen = false" class="p-1 text-slate-400 hover:text-white transition cursor-pointer">✕</button>
+        </div>
+
+        <!-- 7个简洁栏目导航条 -->
+        <div class="flex items-center gap-1 px-4 py-2 border-b border-slate-800 bg-[#0e111a] overflow-x-auto no-scrollbar shrink-0">
+          <button 
+            v-for="tab in cleanTabs" 
+            :key="tab.id"
+            @click="activeEditTab = tab.id"
+            :class="activeEditTab === tab.id ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'"
+            class="px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer whitespace-nowrap"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <!-- 表单正文 -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs">
+          
+          <!-- 1. 概览 -->
+          <div v-show="activeEditTab === 'overview'" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="block text-slate-400 mb-1">角色名字 <span class="text-rose-400">*</span></label><input v-model="form.name" type="text" placeholder="例：艾尔诺斯·星芒" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">别称 / 称号</label><input v-model="form.nickname" type="text" placeholder="例：月影隐修" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">性别</label><input v-model="form.gender" type="text" placeholder="例：男 / 女 / 无" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">年龄</label><input v-model="form.age" type="text" placeholder="例：24岁" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">种族</label><input v-model="form.race" type="text" placeholder="例：星灵月裔" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">职位 / 身份</label><input v-model="form.occupation" type="text" placeholder="例：深空观测者" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">生日</label><input v-model="form.birthday" type="text" placeholder="例：10月24日" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">出生日期 / 历法</label><input v-model="form.birthDate" type="text" placeholder="例：霜降之月" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">掌握语种</label><input v-model="form.languages" type="text" placeholder="例：大陆通用语" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+            </div>
+
+            <!-- 象征物 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+              <div><label class="block text-slate-400 mb-1">代表花</label><input v-model="form.representativeFlower" type="text" placeholder="例：幽夜昙华" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div><label class="block text-slate-400 mb-1">代表物</label><input v-model="form.representativeItem" type="text" placeholder="例：永曜星轨罗盘" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-slate-400">代表色</label>
+                  <button type="button" @click="form.representativeColor = ''" class="text-[10px] px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800 text-slate-300 hover:text-white cursor-pointer">无标志色</button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input v-model="form.representativeColor" type="color" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0">
+                  <input v-model="form.representativeColor" type="text" placeholder="留空为无" class="flex-1 px-2 py-1 bg-slate-900 border border-slate-800 rounded text-white text-xs">
+                  <button type="button" @click="form.representativeColor = ''" class="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs hover:text-white cursor-pointer">无</button>
+                </div>
+              </div>
+            </div>
+
+            <div><label class="block text-slate-400 mb-1">口头禅</label><input v-model="form.catchphrase" type="text" placeholder="例：“繁星从不向黑夜低头，我也一样。”" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white outline-none"></div>
+          </div>
+
+          <!-- 2. 档案 -->
+          <div v-show="activeEditTab === 'dossier'" class="space-y-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div><label class="block text-slate-400 mb-1">身高</label><input v-model="form.height" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">体重</label><input v-model="form.weight" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">发色</label><input v-model="form.hairColor" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">发型</label><input v-model="form.hairStyle" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">瞳色</label><input v-model="form.eyeColor" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">耳饰</label><input v-model="form.earAccessories" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">发饰</label><input v-model="form.hairAccessories" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">其他特征</label><input v-model="form.otherFeatures" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+              <div><label class="block text-slate-400 mb-1">异能 / 特殊能力</label><input v-model="form.superpower" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">武器风格</label><input v-model="form.weaponStyle" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+              <div><label class="block text-slate-400 mb-1">性格描述</label><input v-model="form.personality" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">精神状态</label><input v-model="form.mentalState" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">心理阴影 / 创伤</label><input v-model="form.trauma" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">恐惧事物</label><input v-model="form.fears" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+            </div>
+          </div>
+
+          <!-- 3. 九维 -->
+          <div v-show="activeEditTab === 'stats'" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div v-for="stat in statList" :key="stat.key" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">{{ stat.label }}</span>
+                  <span class="font-bold text-purple-400">{{ form.stats[stat.key] || 50 }}</span>
+                </div>
+                <input v-model.number="form.stats[stat.key]" type="range" min="0" max="100" class="w-full accent-purple-500 cursor-pointer">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 背景 -->
+          <div v-show="activeEditTab === 'lore'" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div><label class="block text-slate-400 mb-1">出生地</label><input v-model="form.birthplace" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">现居地</label><input v-model="form.residence" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+              <div><label class="block text-slate-400 mb-1">宗教信仰</label><input v-model="form.religion" type="text" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-white"></div>
+            </div>
+            <div><label class="block text-slate-400 mb-1">角色小传与设定简介</label><textarea v-model="form.bio" rows="4" class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white resize-none"></textarea></div>
+          </div>
+
+          <!-- 5. 世界观 (单独分栏 + 可编辑时间轴) -->
+          <div v-show="activeEditTab === 'worldview'" class="space-y-4">
+            <div>
+              <label class="block text-slate-400 mb-1">所处世界观宏观设定</label>
+              <textarea v-model="form.worldview" rows="3" placeholder="描述该世界的基本法则、纪元与势力格局..." class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white resize-none"></textarea>
+            </div>
+
+            <!-- 添加时间轴条目 -->
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+              <span class="font-bold text-purple-300 block">添加世界线历史节点 (按年代自动升序排列)</span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input v-model="timelineInput.year" type="text" placeholder="年代 (例：星陨纪元 342年)" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white">
+                <input v-model="timelineInput.title" type="text" placeholder="事件标题" class="sm:col-span-2 px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white">
+              </div>
+              <textarea v-model="timelineInput.description" rows="2" placeholder="事件简述..." class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white resize-none"></textarea>
+              <button @click="addTimelineItem" type="button" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium cursor-pointer">+ 添加节点</button>
+
+              <div v-if="form.timelineEvents && form.timelineEvents.length" class="space-y-2 pt-2 border-t border-slate-800">
+                <div v-for="(evt, i) in getSortedTimeline(form.timelineEvents)" :key="i" class="p-2.5 rounded bg-slate-950 border border-slate-800 flex justify-between items-start gap-2">
+                  <div>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-950 text-purple-300 mr-2 font-mono">{{ evt.year }}</span>
+                    <strong class="text-white">{{ evt.title }}</strong>
+                    <p class="text-slate-400 text-[11px] mt-0.5">{{ evt.description }}</p>
+                  </div>
+                  <button @click="removeTimelineItem(evt.id)" type="button" class="text-rose-400 hover:text-rose-300 text-xs">✕</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. 关系 (选择已有OC并设定关系) -->
+          <div v-show="activeEditTab === 'relations'" class="space-y-4">
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+              <span class="font-bold text-purple-300 block">建立人物关系与关系网</span>
+
+              <div v-if="characters.filter(c => c.id !== form.id).length > 0" class="space-y-2.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-slate-400 mb-1 text-[11px]">选择关联 OC</label>
+                    <select v-model="relInput.targetId" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white">
+                      <option v-for="c in characters.filter(ch => ch.id !== form.id)" :key="c.id" :value="c.id">{{ c.name }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-slate-400 mb-1 text-[11px]">关系类型</label>
+                    <input v-model="relInput.type" type="text" placeholder="例：时空盟友 / 宿敌 / 挚友" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white">
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-slate-500 text-[10px]">快捷：</span>
+                  <button v-for="r in ['挚友', '宿敌', '搭档', '恋人', '师徒', '同盟']" :key="r" @click="relInput.type = r" type="button" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-[10px] text-slate-300">{{ r }}</button>
+                </div>
+
+                <textarea v-model="relInput.description" rows="2" placeholder="关系往事说明..." class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white resize-none"></textarea>
+                <button @click="addRelationItem" type="button" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium cursor-pointer">+ 添加关系条目</button>
+
+                <div v-if="form.relationships && form.relationships.length" class="space-y-2 pt-2 border-t border-slate-800">
+                  <div v-for="r in form.relationships" :key="r.id" class="p-2.5 rounded bg-slate-950 border border-slate-800 flex justify-between items-start gap-2">
+                    <div>
+                      <strong class="text-white mr-2">{{ getCharNameById(r.targetCharacterId) }}</strong>
+                      <span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-950 text-purple-300 font-mono">{{ r.relationType }}</span>
+                      <p class="text-slate-400 text-[11px] mt-0.5">{{ r.description }}</p>
+                    </div>
+                    <button @click="removeRelationItem(r.id)" type="button" class="text-rose-400 hover:text-rose-300 text-xs">✕</button>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-xs text-slate-500 py-4 text-center">
+                数据库中暂无其他 OC，请先在主页面新建更多 OC 后即可相互建立人际网络。
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. 图库 (头像、立绘、相册) -->
+          <div v-show="activeEditTab === 'gallery'" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- 头像 -->
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                <span class="font-bold text-slate-300 block">头像图片</span>
+                <div class="flex items-center gap-3">
+                  <div class="w-16 h-16 rounded-xl bg-slate-950 border border-slate-700 overflow-hidden flex items-center justify-center">
+                    <img v-if="form.avatar" :src="form.avatar" class="w-full h-full object-cover" alt="">
+                    <span v-else class="text-slate-600 text-xs">无</span>
+                  </div>
+                  <label class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-medium cursor-pointer">
+                    上传本地头像
+                    <input type="file" accept="image/*" class="hidden" @change="handleFile($event, 'avatar')">
+                  </label>
+                </div>
+              </div>
+
+              <!-- 全身立绘 -->
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                <span class="font-bold text-slate-300 block">全身立绘插画</span>
+                <div class="flex items-center gap-3">
+                  <div class="w-16 h-20 rounded-xl bg-slate-950 border border-slate-700 overflow-hidden flex items-center justify-center p-1">
+                    <img v-if="form.standingIllustration" :src="form.standingIllustration" class="max-w-full max-h-full object-contain" alt="">
+                    <span v-else class="text-slate-600 text-[10px]">无</span>
+                  </div>
+                  <label class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-medium cursor-pointer">
+                    上传全身立绘
+                    <input type="file" accept="image/*" class="hidden" @change="handleFile($event, 'standingIllustration')">
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 相册 -->
+            <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-slate-300">相册插画图库 ({{ form.gallery ? form.gallery.length : 0 }})</span>
+                <label class="px-3 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white text-xs cursor-pointer">
+                  + 批量上传照片
+                  <input type="file" multiple accept="image/*" class="hidden" @change="handleGalleryUpload">
+                </label>
+              </div>
+
+              <div v-if="form.gallery && form.gallery.length" class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                <div v-for="(g, idx) in form.gallery" :key="idx" class="relative aspect-square rounded-lg overflow-hidden border border-slate-700 bg-slate-950 p-1">
+                  <img :src="g.url" class="w-full h-full object-contain" alt="">
+                  <button @click="removeGalleryItem(idx)" type="button" class="absolute top-1 right-1 p-1 rounded bg-black/80 text-rose-400 text-xs">✕</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 弹窗底部 -->
+        <div class="p-3.5 border-t border-slate-800 flex justify-end gap-2 bg-[#141827]/90 shrink-0">
+          <button @click="isEditModalOpen = false" class="px-4 py-1.5 rounded-xl bg-slate-800 text-slate-300 text-xs">取消</button>
+          <button @click="saveForm" class="px-5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md">保存设定档案</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div v-if="deleteConfirmModal.isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+      <div class="relative w-full max-w-sm bg-[#131625] border border-slate-800 rounded-2xl p-5 shadow-2xl text-slate-100 space-y-4">
+        <h3 class="text-sm font-bold text-white">确认删除该角色卡？</h3>
+        <p class="text-xs text-slate-400">确定要彻底删除「<span class="text-rose-400 font-bold">{{ deleteConfirmModal.targetName }}</span>」吗？此操作不可撤销。</p>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button @click="deleteConfirmModal.isOpen = false" class="px-3.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">取消</button>
+          <button @click="executeDelete" class="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow">确认删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    const DEFAULT_STATS = {
+      stamina: 75, endurance: 78, vision: 96, patience: 90,
+      hearing: 88, taste: 65, smell: 72, luck: 60, constitution: 82
+    };
+
+    const DB_NAME = 'OC_Database_V6_Clean';
+    const STORE_NAME = 'characters';
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = e => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    createApp({
+      setup() {
+        const isDark = ref(localStorage.getItem('oc_theme') !== 'light');
+        function toggleTheme() {
+          isDark.value = !isDark.value;
+          localStorage.setItem('oc_theme', isDark.value ? 'dark' : 'light');
+          if (isDark.value) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          }
+        }
+
+        const characters = ref([]);
+        const searchQuery = ref('');
+        const selectedTag = ref('');
+        const sortBy = ref('updatedAt');
+        const viewMode = ref('grid');
+
+        const isEditModalOpen = ref(false);
+        const isDetailModalOpen = ref(false);
+        const activeChar = ref(null);
+
+        // 7个极简栏目
+        const cleanTabs = [
+          { id: 'overview', label: '概览' },
+          { id: 'dossier', label: '档案' },
+          { id: 'stats', label: '九维' },
+          { id: 'lore', label: '背景' },
+          { id: 'worldview', label: '世界观' },
+          { id: 'relations', label: '关系' },
+          { id: 'gallery', label: '图库' }
+        ];
+
+        const activeDetailTab = ref('overview');
+        const activeEditTab = ref('overview');
+
+        // 时间轴与关系输入
+        const timelineInput = ref({ year: '', title: '', description: '' });
+        const relInput = ref({ targetId: '', type: '挚友', description: '' });
+
+        // 全屏大图灯箱浏览
+        const isViewerOpen = ref(false);
+        const viewerIndex = ref(0);
+        const viewerImages = ref([]);
+
+        // 删除确认弹窗
+        const deleteConfirmModal = ref({ isOpen: false, targetId: '', targetName: '' });
+
+        const statList = [
+          { key: 'stamina', label: '体力' },
+          { key: 'endurance', label: '耐力' },
+          { key: 'vision', label: '视力' },
+          { key: 'patience', label: '耐心' },
+          { key: 'hearing', label: '听觉' },
+          { key: 'taste', label: '味觉' },
+          { key: 'smell', label: '嗅觉' },
+          { key: 'luck', label: '运气' },
+          { key: 'constitution', label: '体质' }
+        ];
+
+        const form = ref(createNewBlankChar());
+
+        function createNewBlankChar() {
+          return {
+            id: 'oc_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+            name: '', nickname: '', gender: '', age: '', birthday: '', birthDate: '',
+            race: '', occupation: '', languages: '', superpower: '', weaponStyle: '',
+            height: '', weight: '', bodyType: '', hairColor: '', hairLength: '', hairStyle: '',
+            faceShape: '', eyeColor: '', eyeShape: '', earAccessories: '', hairAccessories: '',
+            attractiveness: '', otherFeatures: '',
+            representativeFlower: '', representativeColor: '#8b5cf6', representativeItem: '', catchphrase: '',
+            tastePreference: '', favoriteActivities: '', dietaryHabits: '', allergies: '', hobbies: '', likes: '', dislikes: '',
+            stats: { ...DEFAULT_STATS },
+            personality: '', mentalState: '', trauma: '', illnesses: '', behaviorHabits: '', fears: '', proficiencies: '', aspirations: '',
+            birthplace: '', residence: '', religion: '', familyBackground: '', familyCustoms: '', familyHeirloom: '',
+            bio: '', worldview: '', timeline: '',
+            timelineEvents: [], relationships: [],
+            avatar: '', standingIllustration: '', gallery: [], tags: [],
+            createdAt: Date.now(), updatedAt: Date.now()
+          };
+        }
+
+        // 年代解析并升序排序时间轴
+        function extractYear(y) {
+          if (!y) return 0;
+          const isBCE = /(前|B\.?C\.?)/i.test(y);
+          const m = y.match(/(\d+)/);
+          if (m) {
+            const v = parseInt(m[1], 10);
+            return isBCE ? -v : v;
+          }
+          return 0;
+        }
+
+        function getSortedTimeline(evts) {
+          if (!evts || !Array.isArray(evts)) return [];
+          return [...evts].sort((a, b) => extractYear(a.year) - extractYear(b.year));
+        }
+
+        function getCharNameById(id) {
+          const c = characters.value.find(item => item.id === id);
+          return c ? c.name : '未知角色';
+        }
+
+        function computeRelationNodes(char) {
+          if (!char || !char.relationships || !char.relationships.length) return [];
+          const valid = char.relationships.map(rel => {
+            const target = characters.value.find(c => c.id === rel.targetCharacterId);
+            return { rel, target };
+          }).filter(item => Boolean(item.target));
+
+          const count = valid.length;
+          const cx = 250, cy = 150, r = 100;
+          return valid.map((item, idx) => {
+            const angle = (2 * Math.PI * idx) / count - Math.PI / 2;
+            return {
+              ...item,
+              x: cx + r * Math.cos(angle),
+              y: cy + r * Math.sin(angle)
+            };
+          });
+        }
+
+        async function loadAll() {
+          try {
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.getAll();
+            req.onsuccess = () => {
+              let list = req.result || [];
+              if (list.length === 0) {
+                // 预设 1: 艾尔诺斯·星芒
+                const staris = createNewBlankChar();
+                staris.id = 'preset_oc_1';
+                staris.name = '艾尔诺斯·星芒 (Elnos Staris)';
+                staris.nickname = '月影隐修 / 白夜守望';
+                staris.race = '星灵月裔 (Astral Elf)';
+                staris.occupation = '深空星轨观测者 / 游荡魔导师';
+                staris.gender = '男';
+                staris.age = '24岁 (表象) / 真实未知';
+                staris.birthday = '10月24日';
+                staris.superpower = '重力曲翘、星光具象化、短距空间折跃';
+                staris.weaponStyle = '星轨提灯与符文轻剑，擅长中远距离空间控场';
+                staris.languages = '星灵古语、通用大陆语';
+                staris.height = '183 cm';
+                staris.weight = '67 kg';
+                staris.bodyType = '修长匀称';
+                staris.hairColor = '银白泛淡紫荧光';
+                staris.eyeColor = '琉璃紫与金瞳异色';
+                staris.representativeFlower = '幽夜昙华 (Night Lumina)';
+                staris.representativeColor = '#8b5cf6';
+                staris.representativeItem = '永曜星轨罗盘';
+                staris.catchphrase = '“繁星从不向黑夜低头，我也一样。”';
+                staris.bio = '诞生于浮空大陆最后的荣耀时代。当深渊天蚀降临吞噬母城，他带着传承星盘乘舟流浪大陆。冷静优雅的学者面具下，是随时准备拔剑守护仅存世界的决绝战士。';
+                staris.worldview = '以魔晶与以太能驱动的高魔架空奇幻大陆《原初天穹》，天界、地表与深渊裂隙并存';
+                staris.timelineEvents = [
+                  { id: 't1', year: '星陨前50年', title: '星灵月裔受洗', description: '诞生于浮空大陆月辉殿堂，觉醒原初星轨共鸣' },
+                  { id: 't2', year: '星陨纪元 342年', title: '天城覆灭之灾', description: '深渊裂隙吞噬母城，佩戴星盘乘极光号流浪大陆' },
+                  { id: 't3', year: '星陨纪元 347年', title: '穿越时空裂隙', description: '在边境星港观测到异常量子波动，结识跨界游侠' }
+                ];
+                staris.relationships = [
+                  { id: 'r1', targetCharacterId: 'preset_oc_2', relationType: '时空盟友', description: '在异界裂隙偶遇的赛博黑客游侠，达成了不可思议的协防默契' }
+                ];
+                staris.avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+                staris.standingIllustration = 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80';
+                staris.gallery = [
+                  { id: 'g1', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80', caption: '星轨观测站日常记录' }
+                ];
+                staris.tags = ['主角', '奇幻魔法', '高岭之花', '学者'];
+
+                // 预设 2: 弥娅·霓虹鬼影
+                const mia = createNewBlankChar();
+                mia.id = 'preset_oc_2';
+                mia.name = '弥娅·“霓虹鬼影” (Mia Vane)';
+                mia.nickname = '代码猎犬 / 零点幽灵';
+                mia.race = '半义体改造人类 (Cyborg)';
+                mia.occupation = '黑客佣兵 / 自由信息经纪人';
+                mia.gender = '女';
+                mia.age = '19岁';
+                mia.birthday = '7月17日';
+                mia.superpower = '神经接口直连军用网络、微秒级超频反应';
+                mia.weaponStyle = '电磁腕刃与折叠近战冲锋枪';
+                mia.languages = '赛博俚语、汇编加密语言';
+                mia.height = '166 cm';
+                mia.weight = '52 kg';
+                mia.representativeColor = '#ec4899';
+                mia.representativeFlower = '机械电子曼陀罗';
+                mia.representativeItem = '全息数据掌机';
+                mia.catchphrase = '“别把后背留给防火墙，更别留给我。”';
+                mia.bio = '夜幕城黑市声名鹊起的年轻独行黑客。身负军用级改造义体，以高超的侵入技术穿梭于浮华天街与阴暗底巢之间。';
+                mia.worldview = '赛博朋克架空反乌托邦巨型都市《夜幕城》，财阀垄断政权与科技';
+                mia.timelineEvents = [
+                  { id: 'm1', year: '新历2089年', title: '诞生于锈蚀街区', description: '出生于夜幕城地下三层，在拾荒与电磁噪音中长大' },
+                  { id: 'm2', year: '新历2108年', title: '冲出地下实验室', description: '黑入中央服务器引发自毁程序，率领同伴逃出生天' }
+                ];
+                mia.relationships = [
+                  { id: 'r2', targetCharacterId: 'preset_oc_1', relationType: '异界搭档', description: '被她戏称为“古董星光神棍”的法师，互相视作生死相托的挚友' }
+                ];
+                mia.avatar = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80';
+                mia.standingIllustration = 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80';
+                mia.tags = ['主角', '赛博朋克', '傲娇', '元气'];
+
+                saveToDB(staris);
+                saveToDB(mia);
+                characters.value = [staris, mia];
+              } else {
+                characters.value = list;
+              }
+            };
+          } catch (err) {
+            console.error('加载本地数据库失败:', err);
+          }
+        }
+
+        async function saveToDB(char) {
+          const db = await openDB();
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          tx.objectStore(STORE_NAME).put(JSON.parse(JSON.stringify(char)));
+        }
+
+        async function deleteFromDB(id) {
+          const db = await openDB();
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          tx.objectStore(STORE_NAME).delete(id);
+        }
+
+        const availableTags = computed(() => {
+          const s = new Set();
+          characters.value.forEach(c => (c.tags || []).forEach(t => s.add(t)));
+          return Array.from(s);
+        });
+
+        const filteredCharacters = computed(() => {
+          return characters.value.filter(c => {
+            if (selectedTag.value && (!c.tags || !c.tags.includes(selectedTag.value))) return false;
+            if (!searchQuery.value.trim()) return true;
+            const q = searchQuery.value.toLowerCase().trim();
+            const str = (c.name + ' ' + (c.nickname||'') + ' ' + (c.race||'') + ' ' + (c.occupation||'')).toLowerCase();
+            return str.includes(q);
+          }).sort((a,b) => {
+            if (sortBy.value === 'name') return (a.name||'').localeCompare(b.name||'');
+            if (sortBy.value === 'createdAt') return (b.createdAt||0) - (a.createdAt||0);
+            return (b.updatedAt||0) - (a.updatedAt||0);
+          });
+        });
+
+        function openCreateModal() {
+          form.value = createNewBlankChar();
+          activeEditTab.value = 'overview';
+          const others = characters.value.filter(c => c.id !== form.value.id);
+          if (others.length) relInput.value.targetId = others[0].id;
+          isEditModalOpen.value = true;
+        }
+
+        function openEditModal(char) {
+          form.value = JSON.parse(JSON.stringify(char));
+          if (!form.value.timelineEvents) form.value.timelineEvents = [];
+          if (!form.value.relationships) form.value.relationships = [];
+          if (!form.value.gallery) form.value.gallery = [];
+          if (!form.value.stats) form.value.stats = { ...DEFAULT_STATS };
+          activeEditTab.value = 'overview';
+          const others = characters.value.filter(c => c.id !== form.value.id);
+          if (others.length) relInput.value.targetId = others[0].id;
+          isEditModalOpen.value = true;
+        }
+
+        function openDetailModal(char) {
+          activeChar.value = char;
+          activeDetailTab.value = 'overview';
+          isDetailModalOpen.value = true;
+        }
+
+        async function saveForm() {
+          if (!form.value.name.trim()) {
+            alert('请至少填写角色名字');
+            activeEditTab.value = 'overview';
+            return;
+          }
+          form.value.updatedAt = Date.now();
+          await saveToDB(form.value);
+          await loadAll();
+          if (activeChar.value && activeChar.value.id === form.value.id) {
+            activeChar.value = JSON.parse(JSON.stringify(form.value));
+          }
+          isEditModalOpen.value = false;
+        }
+
+        function addTimelineItem() {
+          if (!timelineInput.value.year.trim() && !timelineInput.value.title.trim()) return;
+          if (!form.value.timelineEvents) form.value.timelineEvents = [];
+          form.value.timelineEvents.push({
+            id: 't_' + Date.now(),
+            year: timelineInput.value.year.trim() || '未知年代',
+            title: timelineInput.value.title.trim() || '重大事件',
+            description: timelineInput.value.description.trim()
+          });
+          timelineInput.value = { year: '', title: '', description: '' };
+        }
+
+        function removeTimelineItem(id) {
+          form.value.timelineEvents = form.value.timelineEvents.filter(e => e.id !== id);
+        }
+
+        function addRelationItem() {
+          if (!relInput.value.targetId) return;
+          if (!form.value.relationships) form.value.relationships = [];
+          form.value.relationships = form.value.relationships.filter(r => r.targetCharacterId !== relInput.value.targetId);
+          form.value.relationships.push({
+            id: 'rel_' + Date.now(),
+            targetCharacterId: relInput.value.targetId,
+            relationType: relInput.value.type.trim() || '关联',
+            description: relInput.value.description.trim()
+          });
+          relInput.value.description = '';
+        }
+
+        function removeRelationItem(id) {
+          form.value.relationships = form.value.relationships.filter(r => r.id !== id);
+        }
+
+        function getCharNameById(id) {
+          const c = characters.value.find(item => item.id === id);
+          return c ? c.name : '未知OC';
+        }
+
+        function computeRelationNodes(char) {
+          if (!char || !char.relationships || !char.relationships.length) return [];
+          const valid = [];
+          char.relationships.forEach(rel => {
+            const target = characters.value.find(c => c.id === rel.targetCharacterId);
+            if (target) {
+              valid.push({ rel, target });
+            }
+          });
+          const count = valid.length;
+          const centerX = 250;
+          const centerY = 140;
+          const radius = 95;
+          return valid.map((item, idx) => {
+            const angle = (2 * Math.PI * idx) / count - Math.PI / 2;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            return {
+              ...item,
+              x,
+              y
+            };
+          });
+        }
+
+        // 大图浏览灯箱
+        function openViewerFromChar(char, targetUrl) {
+          const imgs = [];
+          if (char.avatar) imgs.push({ url: char.avatar, caption: '角色头像' });
+          if (char.standingIllustration) imgs.push({ url: char.standingIllustration, caption: '全身立绘' });
+          if (char.gallery && char.gallery.length) {
+            char.gallery.forEach(g => imgs.push({ url: g.url, caption: g.caption || '相册插图' }));
+          }
+          if (imgs.length === 0) return;
+          viewerImages.value = imgs;
+          const idx = imgs.findIndex(i => i.url === targetUrl);
+          viewerIndex.value = idx >= 0 ? idx : 0;
+          isViewerOpen.value = true;
+        }
+
+        function closeViewer() {
+          isViewerOpen.value = false;
+        }
+
+        function prevViewerImage() {
+          viewerIndex.value = (viewerIndex.value > 0 ? viewerIndex.value - 1 : viewerImages.value.length - 1);
+        }
+
+        function nextViewerImage() {
+          viewerIndex.value = (viewerIndex.value < viewerImages.value.length - 1 ? viewerIndex.value + 1 : 0);
+        }
+
+        function promptDelete(id, name) {
+          deleteConfirmModal.value = { isOpen: true, targetId: id, targetName: name || '该角色' };
+        }
+
+        async function executeDelete() {
+          const id = deleteConfirmModal.value.targetId;
+          await deleteFromDB(id);
+          deleteConfirmModal.value.isOpen = false;
+          await loadAll();
+          if (activeChar.value && activeChar.value.id === id) {
+            isDetailModalOpen.value = false;
+            activeChar.value = null;
+          }
+        }
+
+        function compressFile(file) {
+          return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = ev => {
+              const img = new Image();
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                const max = 1400;
+                if (w > max || h > max) {
+                  if (w > h) { h = Math.round((h * max) / w); w = max; }
+                  else { w = Math.round((w * max) / h); h = max; }
+                }
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', 0.86));
+              };
+              img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        async function handleFile(e, field) {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          form.value[field] = await compressFile(file);
+          e.target.value = '';
+        }
+
+        async function handleGalleryUpload(e) {
+          const files = e.target.files;
+          if (!files || !files.length) return;
+          if (!form.value.gallery) form.value.gallery = [];
+          for (let i = 0; i < files.length; i++) {
+            const b64 = await compressFile(files[i]);
+            form.value.gallery.push({
+              url: b64,
+              caption: files[i].name.replace(/\.[^/.]+$/, '')
+            });
+          }
+          e.target.value = '';
+        }
+
+        function removeGalleryItem(index) {
+          form.value.gallery.splice(index, 1);
+        }
+
+        function copyAllText(c) {
+          const text = `=== 【OC 独立设定档案】${c.name} ===
+别称/称号：${c.nickname || '无'}
+性别：${c.gender || '未知'} | 年龄：${c.age || '未知'} | 种族：${c.race || '未知'}
+职位/身份：${c.occupation || '未知'}
+生日：${c.birthday || '未知'}
+代表色：${c.representativeColor} | 代表花：${c.representativeFlower || '无'} | 代表物：${c.representativeItem || '无'}
+口头禅：“${c.catchphrase || '暂无'}”
+
+【外貌特征】
+身高：${c.height || '未知'} | 体重：${c.weight || '未知'} | 发色：${c.hairColor || '-'} | 瞳色：${c.eyeColor || '-'}
+
+【异能与战法】
+特殊异能：${c.superpower || '无'} | 武器风格：${c.weaponStyle || '无'}
+
+【设定简介】
+${c.bio || '暂无详细简介'}
+
+【世界观】
+${c.worldview || '无'}
+`;
+          navigator.clipboard.writeText(text);
+          alert('已复制「' + c.name + '」的设定文本');
+        }
+
+        function openExportModal() {
+          const str = JSON.stringify(characters.value, null, 2);
+          const blob = new Blob([str], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `OC全设定集_备份_${new Date().toISOString().slice(0,10)}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+
+        function openImportModal() {
+          const inp = document.createElement('input');
+          inp.type = 'file';
+          inp.accept = '.json,application/json';
+          inp.onchange = async e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const r = new FileReader();
+            r.onload = async ev => {
+              try {
+                const arr = JSON.parse(ev.target.result);
+                const list = Array.isArray(arr) ? arr : (arr.characters || []);
+                for (const item of list) {
+                  if (item.id && item.name) await saveToDB(item);
+                }
+                await loadAll();
+                alert('成功导入角色数据');
+              } catch {
+                alert('备份文件格式不正确');
+              }
+            };
+            r.readAsText(file);
+          };
+          inp.click();
+        }
+
+        onMounted(() => {
+          loadAll();
+          if (isDark.value) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          }
+        });
+
+        return {
+          isDark, toggleTheme,
+          characters, searchQuery, selectedTag, sortBy, viewMode,
+          isEditModalOpen, isDetailModalOpen, activeChar,
+          cleanTabs, activeDetailTab, activeEditTab,
+          timelineInput, relInput, isViewerOpen, viewerIndex, viewerImages,
+          deleteConfirmModal, statList, form, availableTags, filteredCharacters,
+          openCreateModal, openEditModal, openDetailModal, saveForm,
+          addTimelineItem, removeTimelineItem, getSortedTimeline,
+          addRelationItem, removeRelationItem, getCharNameById, computeRelationNodes,
+          openViewerFromChar, closeViewer, prevViewerImage, nextViewerImage,
+          promptDelete, executeDelete, handleFile, handleGalleryUpload, removeGalleryItem,
+          copyAllText, openExportModal, openImportModal
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
